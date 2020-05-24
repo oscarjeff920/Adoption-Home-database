@@ -1,4 +1,5 @@
 import pandas as pds
+
 class Foster_Children:
 	children_in_care = {}
 	adopted_children = {}
@@ -17,17 +18,12 @@ class Foster_Children:
 		cls.adopted_children[child].update( {"adopted" : True})
 		cls.children_in_care.pop(child)
 
-
-
-
-
 	@classmethod
 	def Print_adopted_children(cls):
 		print("There are currently %s adopted children:\n\n"%len(cls.adopted_children))
 		for Child in cls.adopted_children:
 			print("%s is a %s year old %s living with the %s family."
 				%(cls.adopted_children[Child]["name"], cls.adopted_children[Child]["age"],cls.adopted_children[Child]["gender"].lower(), cls.adopted_children[Child]["parents"]))
-
 
 	@classmethod
 	def Print_children_in_care(cls):
@@ -66,21 +62,24 @@ class Parents:
 	def number_of_children(self):
 		return len(self.children)
 
-	def adopt(self, Child):
-		if self.number_of_children() == Parents.max_children:
-			return print("The %s's are unable to adopt %s because our policies only allow families with less than 4 children to adopt"%(self.name, name))
+	def adopt(self, *Child):
+		if self.number_of_children() == Parents.max_children or (len(Child) + len(self.children)) > Parents.max_children:
+			if len(Child) > 1:
+				return print("Our policy on maximum family size means the %s family are unable to adopt more than %s children.\n\n"%(self.name, (Parents.max_children - len(self.children))))
+			else:
+				return print("The %s's are unable to adopt %s because our policies only allow families with less than 4 children to adopt.\n\n"%(self.name, name))
 		else:
-			Foster_Children.foster(self.name.capitalize(), Child.capitalize())
-			self.children[Child.capitalize()] = Foster_Children.adopted_children[Child.capitalize()]
-			self.children[Child.capitalize()].pop("parents")
+			for kid in Child:
+				Foster_Children.foster(self.name.capitalize(), kid)
+			self.children[kid] = Foster_Children.adopted_children[kid]
+			self.children[kid.capitalize()].pop("parents")
 
 	
-
 Foster_Children("Stevie", 6, "Boy", 3)
 Foster_Children("Jack", 5, "Boy", 4)
 Foster_Children("Paula", 8, "Girl", 7)
-Foster_Children("Pierre", 48, "Boy", 42)
-Foster_Children("Gertude", 21, "Girl", 20)
+Foster_Children("Pierre", 20, "Boy", 15)
+Foster_Children("Gertude", 17, "Girl", 4)
 Foster_Children("Elizabeth", 10, "Girl", 3)
 Foster_Children("Molly", 8, "Girl", 3)
 Foster_Children("Billy", 8, "Boy", 3)
@@ -89,10 +88,10 @@ Smith = Parents("Smith","Paul", 35, "Susan", 32)
 Smith.current_children("Jean-Paul", 8, "Boy")
 Smith.current_children("Sandrine", 3, "Girl", True, 1)
 
-print(Smith.number_of_children())
+#print(Smith.number_of_children())
 
 Smith.adopt("Pierre")
-print(Smith.number_of_children())
-print(Smith.current_children("List"))
-Smith.adopt("")
+print(Smith.current_children("List")) #this lists off all the current children under the 'Smith' family's care
+Smith.adopt("Molly", "Billy")
+print(Smith.current_children("List")) #this lists off all the current children under the 'Smith' family's care
 
